@@ -1,0 +1,114 @@
+# Compiling GRASS on Linux Mint 20 (~ Ubuntu Focal 20.04)
+################################################################
+
+# Sources:
+# https://grasswiki.osgeo.org/wiki/Compile_and_Install#Linux_Mint
+# https://grasswiki.osgeo.org/wiki/Compile_and_Install_Ubuntu#Install_further_compilation_dependencies_(Ubuntu_20.04)
+# https://grasswiki.osgeo.org/wiki/Compile_and_Install_Ubuntu#GRASS_GIS
+
+Note that there's also a binary daily snapshot at https://grass.osgeo.org/grass78/binary/linux/snapshot (referred in grass.osgeo.org/download), but it is compiled against an old GDAL version etc, and therefore quite impossible to use on current systems. It works after running the *-install.sh file (look into it for its syntax regarding source & destination dir), and this GRASS launches in terminal but g.list, g.gui etc. won't work so quite unusable.
+
+# 1. Download or checkout a specific tag from https://github.com/OSGeo/grass/releases, in an ext4 filesystem
+# 1. If needed, install necessary packages for building (see webpage)
+# 2. Enter the grass repo directory, and run:
+
+./configure \
+  --with-cxx \
+  --enable-largefile \
+  --with-proj --with-proj-share=/usr/share/proj \
+  --with-gdal=/usr/bin/gdal-config \
+  --with-python \
+  --with-geos \
+  --with-sqlite \
+  --with-nls \
+  --with-zstd \
+  --with-cairo --with-cairo-ldflags=-lfontconfig \
+  --with-freetype=yes --with-freetype-includes="/usr/include/freetype2/" \
+  --with-wx=/usr/bin/wx-config \
+  --with-wxwidgets \
+  --with-fftw \
+  --with-opengl-libs=/usr/include/GL \
+  --without-postgres \
+  --without-pdal \
+  --without-motif \
+  --without-netcdf \
+  --without-mysql \
+  --without-odbc \
+  --without-openmp \
+  --without-ffmpeg
+
+# 3. check where installation will occur by inspecting the created grass.pc file (crated from grass.pc.in),with relation to overwrites for example. This could be OK for the combination of ubuntugis-unstable with a single compiled installation of each major version number (7.8, 8.0). If needed, find out how to set another prefix (didn't need that for now).
+
+make -j4
+
+sudo checkinstall # this is interactive. Choose a version-specific package name, e.g. grass8.0.0rc2. Also needed is filling out the 'version', i.e. 8.0.0rc2 in this case, otherwise registration with dpkg will fail. Provide as description e.g. 'Locally compiled GRASS GIS 8.0.0RC2'. Then, checkinstall will run a supervised 'make install' after which it will create a deb package that could be used later to repeat this installation, as well a register the installation with dpkg, so that it can be easily uninstalled.
+
+# sudo ldconfig # (didn't do that, it is sometimes used and sometimes not in the tutorials)
+
+# 5. check where following files are and which one will be used by default (because of PATH):
+# grass (/usr/local/bin for locally compiled 7.8; /usr/bin for ubuntugis-unstable). This is no longer a link in version 8.0.
+# grass<xy> # e.g. grass78. Same location as grass. Seems abandoned since compiled grass80, where just grass executable is installed (effectively overwriting the grass symlink of 7.8)
+# bin, lib and those directories (for locally compiled, this is by default under /usr/local/grass<xy>, while for ubuntugis-unstable this is under usr/lib/grass78)
+# documentation (compiled: under /usr/share/doc/<prefix>/ (prefix is e.g. grass8.0.0rc2))
+
+# with usr/local/bin having priority in PATH, this gives:
+
+grass --text # starts 8.0 in last used location
+grass78 --text # starts 7.8 in last used location
+/usr/bin/grass --text #starts in last used location
+
+# archive the debian packages for later use (e.g. in ~/deb_builts)
+
+# note: for R package checking with GRASS, see https://github.com/rsbivand/rgrass/issues/34#issuecomment-1020477340
+
+
+
+
+
+
+
+# Compiling QGIS on Linux Mint 20 (~ Ubuntu Focal 20.04)
+################################################################
+
+# Source:
+# https://github.com/qgis/QGIS/blob/master/INSTALL.md
+
+# 1. Download or checkout a commit from https://github.com/OSGeo/grass, in an ext4 filesystem
+# 2. If needed, install necessary packages for building (see webpage)
+
+# 2. Check that following symlinks are in place:
+$ ll /usr/local/bin/gcc
+lrwxrwxrwx 1 root root 15 dec 19 14:31 /usr/local/bin/gcc -> /usr/bin/ccache*
+$ ll /usr/local/bin/g++
+lrwxrwxrwx 1 root root 15 dec 19 14:31 /usr/local/bin/g++ -> /usr/bin/ccache*
+
+# if not, create them as follows:
+
+cd /usr/local/bin
+sudo ln -s /usr/bin/ccache gcc
+sudo ln -s /usr/bin/ccache g++
+
+# 3. Enter the QGIS repo directory, and run:
+
+mkdir build-master # NEVER RE-USE AN EXISTING ONE (see below)
+cd build-master
+ccmake ..
+
+# press c in order to load initial settings (if settings not shown),
+# then enter for specific changes (below)
+# in ccmake configuration, change some settings:
+# CMAKE_INSTALL_PREFIX             ${HOME}/apps
+# ENABLE_TESTS                     OFF
+# reconfigure with c, then write make files with g
+# quit with q
+
+make -j4
+
+# That's all. You now have the local executables inside build-master/output/bin, ideal for testing purposes.
+# If you need another version alongside a previous one, create another build*/ directory.
+
+# From INSTALL.md:
+# Warning: Make sure that your build directory is completely empty when you enter the [ccmake] command. Do never try to "re-use" an existing Qt5 build directory.
+
+
+
