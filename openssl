@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Installing openssl 1.1.1 from source, in order to get a version from this long-term
+# supported branch that is compatible with MS SQL Server (under Ubuntu 20.04).
+
+# Sources:
+# https://www.spinup.com/installing-openssl-on-ubuntu/
+# https://linuxtect.com/how-to-install-openssl-libraries-on-ubuntu-debian-mint/
+
+# 1. Download the source tarball from a recent 1.1.1 release from
+# https://github.com/openssl/openssl/tags, into a local directory with user access.
+
+# 2. Locally extract the tarball, and enter the directory:
+
+cd openssl
+
+# 3. Configure and build:
+
+ ./config --prefix=/usr/local/openssl --openssldir=/usr/local/openssl
+make
+
+# 4. Install via a deb package:
+
+sudo checkinstall
+
+# In this process, make sure there is a description and make sure the package name is set
+# as e.g. openssl1.1.1m, i.e. including the version number. In that way, it can coexist
+# with an existing openssl package. Files that are proposed to skip, can be safely
+# skipped. The created debian package can be stored as a reference.
+
+# 5. Link the shared libraries
+
+sudo echo "/usr/local/openssl/lib" >> /etc/ld.so.conf.d/openssl-.conf
+sudo ldconfig -v
+
+# in the output of the latter, check that modules have been linked e.g. as follows:
+
+# /usr/local/openssl/lib:
+#     libssl.so.1.1 -> libssl.so.1.1
+#     libcrypto.so.1.1 -> libcrypto.so.1.1
+
+# 6. Prepend /usr/local/openssl/bin to your PATH variable in .bashrc or in /etc/environment:
+
+export PATH=/usr/local/openssl/bin:$PATH
+
+# 7. Do some checks:
+
+dpkg -l | grep openssl
+openssl version
