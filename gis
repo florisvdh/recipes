@@ -6,18 +6,19 @@
 # https://grasswiki.osgeo.org/wiki/Compile_and_Install_Ubuntu#Install_further_compilation_dependencies_(Ubuntu_20.04)
 # https://grasswiki.osgeo.org/wiki/Compile_and_Install_Ubuntu#GRASS_GIS
 
-# Note that there's also a binary daily snapshot at 
-# https://grass.osgeo.org/grass78/binary/linux/snapshot (referred in 
-# grass.osgeo.org/download), but it is compiled against an old GDAL version etc, and 
-# therefore quite impossible to use on current systems. It works after running the 
-# *-install.sh file (look into it for its syntax regarding source & destination dir), and 
+# Note that there's also a binary daily snapshot at
+# https://grass.osgeo.org/grass78/binary/linux/snapshot (referred in
+# grass.osgeo.org/download), but it is compiled against an old GDAL version etc, and
+# therefore quite impossible to use on current systems. It works after running the
+# *-install.sh file (look into it for its syntax regarding source & destination dir), and
 # this GRASS launches in terminal but g.list, g.gui etc. won't work so quite unusable.
 
 # 1. Download or checkout a specific tag from https://github.com/OSGeo/grass/releases, in an ext4 filesystem
 # 1. If needed, install necessary packages for building (see webpage)
-# 2. Enter the grass repo directory, and run:
+# 2. Enter the grass repo directory, replace '<grassXY>' below by a specific value (existing directory) and run the command (note: help is given by `./configure -h`):
 
 ./configure \
+  --prefix=/usr/local/<grassXY> \
   --with-cxx \
   --enable-largefile \
   --with-proj --with-proj-share=/usr/share/proj \
@@ -42,36 +43,34 @@
   --without-openmp \
   --without-ffmpeg
 
-# 3. check where installation will occur by inspecting the created grass.pc file (crated 
-# from grass.pc.in),with relation to overwrites for example. This could be OK for the 
-# combination of ubuntugis-unstable with a single compiled installation of each major 
-# version number (7.8, 8.0). If needed, find out how to set another prefix (didn't need 
-# that for now).
+# 3. check where installation will occur by inspecting the created grass.pc file (created
+# from grass.pc.in),with relation to overwrites for example. The default could be OK for the
+# combination of ubuntugis-unstable with a single compiled installation.
 
 make -j4
 
-sudo checkinstall # this is interactive. 
-# Choose a version-specific package name, e.g. grass8.0.0rc2. Also needed is filling out 
-# the 'version', i.e. 8.0.0rc2 in this case, otherwise registration with dpkg will fail. 
-# Provide as description e.g. 'Locally compiled GRASS GIS 8.0.0RC2'. Then, checkinstall 
-# will run a supervised 'make install' after which it will create a deb package that 
-# could be used later to repeat this installation, as well a register the installation 
+sudo checkinstall # this is interactive.
+# Choose a version-specific package name, e.g. grass8.0.0rc2. Also needed is filling out
+# the 'version', i.e. 8.0.0rc2 in this case, otherwise registration with dpkg will fail.
+# Provide as description e.g. 'Locally compiled GRASS GIS 8.0.0RC2'. Then, checkinstall
+# will run a supervised 'make install' after which it will create a deb package that
+# could be used later to repeat this installation, as well a register the installation
 # with dpkg, so that it can be easily uninstalled.
 
 # sudo ldconfig # (didn't do that, it is sometimes used and sometimes not in the tutorials)
 
-# 5. check where following files are and which one will be used by default (because of 
-# PATH): 
+# 5. check where following files are and which one will be used by default (because of
+# PATH):
 
- # grass (/usr/local/bin for locally compiled 7.8; /usr/bin for ubuntugis-unstable). This 
+ # grass (by default /usr/local/bin for locally compiled 7.8; /usr/bin for ubuntugis-unstable). This
  # is no longer a link in version 8.0.
 
- # grass<xy> # e.g. grass78. Same location as grass. Seems abandoned since compiled
- # grass80, where just grass executable is installed (effectively overwriting the grass 
+ # grass<xy> # e.g. grass78. Same location as grass. Abandoned since compiled
+ # grass80, where just grass executable is installed (effectively overwriting the grass
  # symlink of 7.8)
 
  # bin, lib and those directories (for locally compiled, this is by default under
- # /usr/local/grass<xy>, while for ubuntugis-unstable this is under usr/lib/grass78) 
+ # /usr/local/grass<xy>, while for ubuntugis-unstable this is under usr/lib/grass78)
 
  # documentation (compiled: under /usr/share/doc/<prefix>/ (prefix is e.g. grass8.0.0rc2))
 
@@ -81,11 +80,11 @@ sudo checkinstall # this is interactive.
 
 grass --text # starts 8.0 in last used location
 grass78 --text # starts 7.8 in last used location
-/usr/bin/grass --text #starts in last used location
+/usr/bin/grass --text #starts ubuntugis-unstable version in last used location
 
 # archive the debian packages for later use (e.g. in ~/deb_builts)
 
-# note: for R package checking with GRASS, see 
+# note: for R package checking with GRASS, see
 # https://github.com/rsbivand/rgrass/issues/34#issuecomment-1020477340
 
 
