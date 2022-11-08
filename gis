@@ -99,7 +99,7 @@ grass78 --text # starts 7.8 in last used location
 # Source:
 # https://github.com/qgis/QGIS/blob/master/INSTALL.md
 
-# 1. Download or checkout a commit from https://github.com/OSGeo/grass, in an ext4 filesystem
+# 1. Download or checkout a commit from https://github.com/qgis/QGIS, in an ext4 filesystem
 # 2. If needed, install necessary packages for building (see webpage)
 
 # 2. Check that following symlinks are in place:
@@ -135,6 +135,3 @@ make -j4
 
 # From INSTALL.md:
 # Warning: Make sure that your build directory is completely empty when you enter the [ccmake] command. Do never try to "re-use" an existing Qt5 build directory.
-
-
-
