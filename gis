@@ -93,6 +93,36 @@ grass78 --text # starts 7.8 in last used location
 
 
 
+# Compiling PCRaster on Linux Mint 21.1 (~ Ubuntu Jammy 22.04)
+###############################################################
+
+# Instructions as copied from https://jvdkwast.github.io/qgis-processing-pcraster/ :
+
+sudo apt install libboost-all-dev libqt5charts5-dev libxerces-c-dev libncurses-dev cmake-curses-gui libqt5opengl5-dev pybind11-dev
+git clone --recursive https://github.com/pcraster/pcraster.git
+cd pcraster && mkdir build && cd build
+cmake -G"Unix Makefiles" -D CMAKE_BUILD_TYPE=Release -DPCRASTER_BUILD_TEST=OFF ..
+make -j4
+sudo make install
+echo "export PYTHONPATH=$PYTHONPATH:/usr/local/python" >> ~/.bash_profile
+
+
+# Modified this to:
+
+apt install libboost-all-dev libqt5charts5-dev libxerces-c-dev libncurses-dev cmake-curses-gui libqt5opengl5-dev pybind11-dev
+git clone --depth 1 https://github.com/pcraster/pcraster.git # actually best choose a specific commit
+cd pcraster && mkdir build && cd build
+cmake -G"Unix Makefiles" -D CMAKE_BUILD_TYPE=Release -DPCRASTER_BUILD_TEST=OFF ..
+make -j4
+sudo checkinstall # apart from installation, also creates a debian package
+echo "export PYTHONPATH=$PYTHONPATH:/usr/local/python" >> ~/.bash_profile 
+
+# Note that .bash_profile is also active outside of bash sessions. This is needed for QGIS to find
+# PCRaster (the PYTHONPATH is to meant to point QGIS at extra Python module directories)
+
+
+
+
 # Compiling QGIS on Linux Mint 20 (~ Ubuntu Focal 20.04)
 ################################################################
 
