@@ -115,10 +115,10 @@ cd pcraster && mkdir build && cd build
 cmake -G"Unix Makefiles" -D CMAKE_BUILD_TYPE=Release -DPCRASTER_BUILD_TEST=OFF ..
 make -j4
 sudo checkinstall # apart from installation, also creates a debian package
-echo "export PYTHONPATH=$PYTHONPATH:/usr/local/python" >> ~/.bash_profile 
+echo "export PYTHONPATH=$PYTHONPATH:/usr/local/python" >> ~/.profile 
 
-# Note that .bash_profile is also active outside of bash sessions. This is needed for QGIS to find
-# PCRaster (the PYTHONPATH is to meant to point QGIS at extra Python module directories)
+# Note that .bash_profile and .profile are also active outside of bash sessions. This is needed for QGIS to find
+# PCRaster (the PYTHONPATH is meant to point QGIS at extra Python module directories)
 
 
 
